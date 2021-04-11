@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveTest : MonoBehaviour
+public class Ball : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
+    /*
+     *  TODO:
+     *      - When first spawned
+     *      - When passed to other attacker
+     *      - When in possession of an attacker
+     *      - When inside goal gate
+     */
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +21,6 @@ public class MoveTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+        
     }
 }
