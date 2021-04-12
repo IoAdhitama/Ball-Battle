@@ -55,10 +55,10 @@ public class GameManager : MonoBehaviour
         // Subscribe to events
         OnMatchStart += HandleMatchStart;
 
-        
+        PreMatch();
     }
 
-    private void Prematch()
+    private void PreMatch()
     {
         // Update pre match info
         SetPreMatchMenuInfo(matchCount, redWinCount, blueWinCount);
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     // Sets the UI text during prematch
     private void SetPreMatchMenuInfo(int matchCount, int redWins, int blueWins)
     {
-        matchCountText.text = "Match" + matchCount;
+        matchCountText.text = "Match " + matchCount;
         matchScoreText.text = blueWins + " - " + redWins;
     }
 
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Start the match timer
-        StartCoroutine(MatchTimeCountdown(140));
+        StartCoroutine(MatchTimeCountdown(10));
     }
 
     IEnumerator MatchTimeCountdown(int matchTime)
@@ -161,7 +161,10 @@ public class GameManager : MonoBehaviour
         }
 
         // Other stuffs that happens on end of match
+        matchCount++;
 
+        // Revert to prematch state
         currentGameState = GameState.PreGame;
+        PreMatch();
     }
 }

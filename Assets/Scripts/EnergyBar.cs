@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class EnergyBar : MonoBehaviour
 {
+    [SerializeField] GameManager game;
+
     [SerializeField] Image[] energyImageArray;
 
     private EnergySystem energySystem;
@@ -15,7 +17,10 @@ public class EnergyBar : MonoBehaviour
     private void Awake()
     {
         energySystem = new EnergySystem();
+
+        game.OnMatchStart += Game_OnMatchStart;
     }
+
 
     private void Update()
     {
@@ -55,6 +60,16 @@ public class EnergyBar : MonoBehaviour
             }
         }
     }
+
+    private void Game_OnMatchStart(object sender, System.EventArgs e)
+    {
+        energySystem.ResetEnergy();
+    }
+
+    private void OnDestroy()
+    {
+        game.OnMatchStart -= Game_OnMatchStart;
+    }
 }
 
 public class EnergySystem
@@ -91,5 +106,10 @@ public class EnergySystem
     public float GetEnergy()
     {
         return currentEnergy;
+    }
+
+    public void ResetEnergy()
+    {
+        currentEnergy = 0;
     }
 }
