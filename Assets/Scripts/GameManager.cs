@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
         GameEnd
     }
 
-    GameState currentGameState = GameState.PreGame;
+    public GameState currentGameState = GameState.PreGame;
 
     /*
      * Handle each states and changes, etc.

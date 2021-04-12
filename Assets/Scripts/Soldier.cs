@@ -31,9 +31,10 @@ public class Soldier : MonoBehaviour
         Defender
     };
 
-    bool isactivated = false;
+    bool isActivated = false;
+    bool isHoldingBall = false;
 
-    Role role;
+    Role soldierRole;
 
     float normalSpeed;
     float carryingSpeed;
@@ -44,9 +45,17 @@ public class Soldier : MonoBehaviour
 
     Vector3 originLocation;
 
+    [SerializeField] GameObject opponentGate;
+
     #endregion
 
-    #region Functions
+    #region Visuals
+
+    private void Awake()
+    {
+        
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -55,40 +64,45 @@ public class Soldier : MonoBehaviour
         originLocation = transform.position;
 
         // Set soldier parameters, depending on whether it is attacking or defending
-        switch (role)
+        switch (soldierRole)
         {
             case Role.Attacker:
-                normalSpeed = 1.5f * Time.deltaTime;
-                carryingSpeed = 0.75f * Time.deltaTime;
+                normalSpeed = 1.5f;
+                carryingSpeed = 0.75f;
                 reactivateTime = 2.5f;
                 break;
 
             case Role.Defender:
-                normalSpeed = 1.0f * Time.deltaTime;
-                returnSpeed = 2f * Time.deltaTime;
+                normalSpeed = 1.0f;
+                returnSpeed = 2f;
                 reactivateTime = 4f;
                 break;
         }
 
-        StartCoroutine(OnSpawn(SPAWNTIME));
+        StartCoroutine(Reactivation(SPAWNTIME));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isactivated)
+        if (isActivated)
         {
             // Attacker behavior
-            if (role == Role.Attacker)
+            if (soldierRole == Role.Attacker)
             {
                 // Chase the ball if it is not being held
+                // Move(normalSpeed, FindObjectOfType<Ball>().transform.position);
 
                 // When holding the ball
+                if (isHoldingBall)
+                {
+                    Move(carryingSpeed, opponentGate.transform.position);
+                }
 
                 // When there is no ball to chase or hold
                 Move(normalSpeed);
             }
-            else if (role == Role.Defender)
+            else if (soldierRole == Role.Defender)
             {
                 // On standby
 
@@ -98,21 +112,31 @@ public class Soldier : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Logic
+
+    void SetSoldierRole(Role role)
+    {
+        soldierRole = role;
+    }
+
     void Move(float speed)
     {
-        transform.Translate(Vector3.forward * speed, Space.Self);
+        transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
     }
 
     void Move(float speed, Vector3 destination)
     {
-
+        Vector3 direction = (destination - transform.position).normalized;
+        transform.Translate(direction * speed * Time.deltaTime);
     }
 
-    IEnumerator OnSpawn(float activationTime)
+    IEnumerator Reactivation(float activationTime)
     {
         yield return new WaitForSeconds(activationTime);
         // Activate the soldier
-        isactivated = true;
+        isActivated = true;
     }
 
     #endregion
