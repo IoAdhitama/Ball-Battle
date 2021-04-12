@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Start the match timer
-        StartCoroutine(MatchTimeCountdown(10));
+        StartCoroutine(MatchTimeCountdown(140));
     }
 
     IEnumerator MatchTimeCountdown(int matchTime)
