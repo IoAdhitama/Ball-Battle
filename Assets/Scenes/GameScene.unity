@@ -4350,12 +4350,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7b82c726bfccb4e83d9a1aa5fdb04f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  energy0Image: {fileID: 1153007}
-  energy1Image: {fileID: 902397760}
-  energy2Image: {fileID: 212873770}
-  energy3Image: {fileID: 1035113516}
-  energy4Image: {fileID: 2043477358}
-  energy5Image: {fileID: 863607879}
+  energyImageArray:
+  - {fileID: 1153007}
+  - {fileID: 902397760}
+  - {fileID: 212873770}
+  - {fileID: 1035113516}
+  - {fileID: 2043477358}
+  - {fileID: 863607879}
 --- !u!1 &2010875292
 GameObject:
   m_ObjectHideFlags: 0
