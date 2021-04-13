@@ -20,7 +20,11 @@ public class Soldier : MonoBehaviour
 
     bool isActivated;
     bool isBallHeld;
+    bool isCatchable;
     bool isHoldingBall;
+
+    Vector3 gateDestination;
+    Vector3 opponentFence;
 
     enum SoldierRole
     {
@@ -51,6 +55,8 @@ public class Soldier : MonoBehaviour
 
         soldierManager = GameObject.Find("GameManager").GetComponent<SoldierManager>();
 
+        gameObject.tag = "Attacker";
+
         DeactivateSoldier(DeactivateReason.Spawn);
     }
 
@@ -74,9 +80,47 @@ public class Soldier : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Find whether ball is being held or not
+
+
         if (!isActivated)
         {
-            
+            if (soldierRole == SoldierManager.SoldierRole.Defender)
+            {
+                // Return to its original location at a faster speed
+                transform.LookAt(originalPosition);
+                transform.Translate((originalPosition - transform.position).normalized * defenderReturnSpeed * Time.deltaTime);
+            }
+            else return;
+        }
+        else
+        {
+            switch (soldierRole)
+            {
+                case SoldierManager.SoldierRole.Attacker:
+                    if (!isBallHeld) // If ball is not being held by attacker
+                    {
+                        // Chase the ball
+
+                        // Send an event once ball is held
+                    } 
+                    else 
+                    {
+                        if (isHoldingBall) // If the attacker is holding the ball
+                        {
+                            transform.LookAt(gateDestination);
+                            transform.Translate((gateDestination - transform.position).normalized * carryingSpeed * Time.deltaTime);
+                        }
+                    }
+
+                    break;
+
+                case SoldierManager.SoldierRole.Defender:
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 
@@ -116,19 +160,18 @@ public class Soldier : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!isActivated)
+        if (isHoldingBall && other.gameObject.GetComponent<Soldier>().soldierRole == SoldierManager.SoldierRole.Defender) // Attacker holding a ball is caught by defender
         {
-            return;
-        }
-        else
-        {
-            // Collides with a ball
+            // Event to pass the ball to another attacker
 
-            // Collides with other team/role
-            if (other.GetComponent<Soldier>().soldierRole != this.soldierRole)
-            {
-                DeactivateSoldier(DeactivateReason.Caught);
-            }
+            DeactivateSoldier(DeactivateReason.Caught);
         }
+
+        if (soldierRole == SoldierManager.SoldierRole.Attacker && other.CompareTag("Fence")) // Attacker reaches the fence
+        {
+            Destroy(gameObject);
+        }
+
+        
     }
 }
