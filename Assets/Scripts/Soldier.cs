@@ -22,6 +22,7 @@ public class Soldier : MonoBehaviour
     bool isActivated;
     bool isBallHeld;
     public bool isHoldingBall;
+    public event EventHandler OnBallPickedUp;
 
     Vector3 gateDestination;
     Vector3 opponentFence;
@@ -85,7 +86,6 @@ public class Soldier : MonoBehaviour
     void Update()
     {
         // Find whether ball is being held or not
-
 
         if (!isActivated)
         {

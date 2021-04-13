@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text matchCountText;
     [SerializeField] Text matchScoreText;
     #endregion
+
     public enum GameState
     {
         PreGame, // Preparing for match or next round
@@ -22,7 +23,7 @@ public class GameManager : MonoBehaviour
         GameEnd // The game ends
     }
 
-    enum EndOfMatchReason
+    public enum EndOfMatchReason
     {
         BallInGate, // Ball reaches opponent's gate, attacker win
         Timeout, // Time out, ball not in opponent gate, match draw
@@ -113,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void EndOfMatch(EndOfMatchReason reason)
+    public void EndOfMatch(EndOfMatchReason reason)
     {
         Debug.Log("Match ending. Reason: " + reason);
 

@@ -6,10 +6,16 @@ public class Ball : MonoBehaviour
 {
     [SerializeField] GameManager game;
 
+    bool isHeld; // Whether it is currently being held
+    bool hasBeenPickedUp; // Has it ever been held during a match? For win condition purpose
+
     // Start is called before the first frame update
     void Start()
     {
         game.OnMatchStart += HandleOnMatchStart;
+        game.OnMatchEnd += HandleOnMatchEnd;
+
+
     }
     
     void HandleOnMatchStart(object sender, System.EventArgs e)
@@ -17,7 +23,12 @@ public class Ball : MonoBehaviour
         StartCoroutine(DelayBallSpawning());
     }
 
-    private void SpawnBall()
+    void HandleOnMatchEnd(object sender, System.EventArgs e)
+    {
+        ResetBall();
+    }
+
+    private void SpawnBall() // Generate (teleport) the ball to a random location on the attacker's field
     {
         switch (game.GetGameState())
         {
@@ -37,10 +48,11 @@ public class Ball : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void ResetBall() // Reset the ball's conditions and location
     {
-        
+        transform.position = Vector3.zero;
+        isHeld = false;
+        hasBeenPickedUp = false;
     }
 
     IEnumerator DelayBallSpawning() // Delay the spawning a bit, till the game state changes
