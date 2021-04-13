@@ -7,6 +7,9 @@ TagManager:
   - Ball
   - BlueLand
   - RedLand
+  - Fence
+  - Attacker
+  - Defender
   layers:
   - Default
   - TransparentFX
