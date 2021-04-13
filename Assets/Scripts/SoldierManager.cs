@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +8,24 @@ public class SoldierManager : MonoBehaviour
     EnergyBar blueTeamEnergyBar;
     EnergyBar redTeamEnergyBar;
 
+    [SerializeField] GameObject soldierPrefab;
+
+    [Header("Soldier Stats")]
     [SerializeField] int attackerCost = 2;
     [SerializeField] int defenderCost = 3;
-    
-    [SerializeField] GameObject soldierPrefab;
+
+    [Header("(Re)Spawning attributes")]
+    [SerializeField] float spawnTime = 0.5f;
+    [SerializeField] float attackerReactivateTime = 2.5f;
+    [SerializeField] float defenderReactivateTime = 4f;
+
+    [Header("Move speed(s)")]
+    [SerializeField] float attackerNormalSpeed = 1.5f;
+    [SerializeField] float defenderNormalSpeed = 1.0f;
+    [SerializeField] float carryingSpeed = 0.75f;
+    [SerializeField] float defenderReturnSpeed = 2.0f;
+
+    public event EventHandler OnReactivation;
 
 
     public enum SoldierRole
@@ -23,6 +38,12 @@ public class SoldierManager : MonoBehaviour
     {
         Blue,
         Red
+    }
+
+    public enum ReactivationType
+    {
+        Spawning,
+        Reactivating
     }
 
     private void Awake()
@@ -87,5 +108,45 @@ public class SoldierManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void HandleInactivation(SoldierRole role, ReactivationType type)
+    {
+        // Reactivation sequence for the soldier
+        switch (type)
+        {
+            case ReactivationType.Spawning:
+                StartCoroutine(ReactivateCountdown(spawnTime));
+                break;
+
+            case ReactivationType.Reactivating:
+                switch (role)
+                {
+                    case SoldierRole.Attacker:
+                        StartCoroutine(ReactivateCountdown(attackerReactivateTime));
+                        break;
+
+                    case SoldierRole.Defender:
+                        StartCoroutine(ReactivateCountdown(defenderReactivateTime));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    IEnumerator ReactivateCountdown(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ReactivateSoldier();
+    }
+
+    void ReactivateSoldier()
+    {
+        // Reactivate the soldier
+        OnReactivation?.Invoke(this, EventArgs.Empty);
     }
 }

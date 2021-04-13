@@ -12,13 +12,14 @@ public class EnergyBar : MonoBehaviour
     private EnergySystem energySystem;
 
     public float energy;
+    [SerializeField] float energyRegen;
 
     private static readonly Vector4 UNFILLED_COLOR = new Vector4(0f, 0.5019f, 0.5019f, 1f); // Hex code: #008080
     private static readonly Vector4 FILLED_COLOR = new Vector4(0f, 1f, 1f, 1f); // Hex code: #00FFFF
 
     private void Awake()
     {
-        energySystem = new EnergySystem();
+        energySystem = new EnergySystem(energyRegen);
 
         game.OnMatchStart += Game_OnMatchStart;
     }
@@ -92,10 +93,10 @@ public class EnergySystem
     private float energyRegen;
     private float currentEnergy;
 
-    public EnergySystem()
+    public EnergySystem(float regeneration)
     {
         currentEnergy = 0;
-        energyRegen = 1f;
+        energyRegen = regeneration;
     }
 
     public void Update()

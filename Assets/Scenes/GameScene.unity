@@ -991,6 +991,8 @@ GameObject:
   m_Component:
   - component: {fileID: 226385989}
   - component: {fileID: 226385988}
+  - component: {fileID: 226385990}
+  - component: {fileID: 226385991}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1015,7 +1017,6 @@ MonoBehaviour:
   matchStartButton: {fileID: 808260134}
   matchCountText: {fileID: 1339071236}
   matchScoreText: {fileID: 1997206919}
-  currentGameState: 2
 --- !u!4 &226385989
 Transform:
   m_ObjectHideFlags: 0
@@ -1028,8 +1029,40 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &226385990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226385987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a44cbda7606ac2d4aa105898da259cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 1729311253}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  gameManager: {fileID: 226385988}
+--- !u!114 &226385991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226385987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe1972e4baae2348a9c7610a5b8d4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackerCost: 2
+  defenderCost: 3
+  soldierPrefab: {fileID: 0}
 --- !u!1 &301906639
 GameObject:
   m_ObjectHideFlags: 0
@@ -3149,7 +3182,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &942188637
 GameObject:
@@ -3560,6 +3593,8 @@ MonoBehaviour:
   - {fileID: 2010875294}
   - {fileID: 1423995525}
   - {fileID: 591079084}
+  energy: 0
+  energyRegen: 0.5
 --- !u!1 &1193468762
 GameObject:
   m_ObjectHideFlags: 0
@@ -4477,7 +4512,7 @@ GameObject:
   - component: {fileID: 1682458789}
   - component: {fileID: 1682458788}
   - component: {fileID: 1682458787}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Blue Land Field
   m_TagString: BlueLand
   m_Icon: {fileID: 0}
@@ -4641,7 +4676,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 75, y: 0, z: 0}
 --- !u!114 &1729311255
 MonoBehaviour:
@@ -5439,6 +5474,8 @@ MonoBehaviour:
   - {fileID: 1035113516}
   - {fileID: 2043477358}
   - {fileID: 863607879}
+  energy: 0
+  energyRegen: 0.5
 --- !u!1 &2010875292
 GameObject:
   m_ObjectHideFlags: 0
