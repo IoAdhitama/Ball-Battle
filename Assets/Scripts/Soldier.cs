@@ -25,8 +25,8 @@ public class Soldier : MonoBehaviour
     public event EventHandler OnBallPickedUp;
 
     Vector3 gateDestination;
-    Vector3 opponentFence;
     Transform opponentToChase;
+    Transform ballLocation;
 
     enum DeactivateReason
     {
@@ -61,10 +61,14 @@ public class Soldier : MonoBehaviour
         {
             case SoldierManager.SoldierTeam.Blue:
                 originalColor = new Vector4(0f, 1f, 1f, 1f);
+                gateDestination = GameObject.Find("RedGate").GetComponent<Transform>().position;
                 break;
+
             case SoldierManager.SoldierTeam.Red:
                 originalColor = new Vector4(0.6415f, 0f, 0f, 1f);
+                gateDestination = GameObject.Find("BlueGate").GetComponent<Transform>().position;
                 break;
+
             default:
                 break;
         }
@@ -85,7 +89,8 @@ public class Soldier : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Find whether ball is being held or not
+        // Find whether ball is being held or not, as well as its location
+        Vector3 ballLocation = GetBallLocation();
 
         if (!isActivated)
         {
@@ -104,15 +109,25 @@ public class Soldier : MonoBehaviour
                 if (!isBallHeld) // If ball is not being held by attacker
                 {
                     // Chase the ball
+                    Move(attackerNormalSpeed, ballLocation);
 
                     // Send an event once ball is held
+                    if (Vector3.Distance(ballLocation, transform.position) <= 0.5f)
+                    {
+                        OnBallPickedUp?.Invoke(this, EventArgs.Empty);
+                        isHoldingBall = true;
+                        isBallHeld = true;
+                    }
                 }
                 else
                 {
                     if (isHoldingBall) // If the attacker is holding the ball
                     {
-                        transform.LookAt(gateDestination);
-                        transform.Translate((gateDestination - transform.position).normalized * carryingSpeed * Time.deltaTime);
+                        Move(carryingSpeed, gateDestination);
+                    }
+                    else
+                    {
+                        Move(attackerNormalSpeed);
                     }
                 }
             }
@@ -122,12 +137,34 @@ public class Soldier : MonoBehaviour
                 {
                     if (opponentToChase != null)
                     {
-                        transform.LookAt(opponentToChase);
-                        transform.Translate((opponentToChase.position - transform.position).normalized * defenderNormalSpeed * Time.deltaTime);
+                        Move(defenderNormalSpeed, opponentToChase.position);
                     }
                 }
             }
         }
+    }
+
+    void Move(float speed) // Go straight forward
+    {
+        if (originalColor == new Color(0f, 1f, 1f, 1f)) // Soldier is colored blue
+        {
+            transform.Translate(Vector3.forward, Space.World);
+        }
+        else // We can assume that it will be colored red, since soldier will not move while it's gray/inactivated anyway
+        {
+            transform.Translate(Vector3.back, Space.World);
+        }
+    }
+
+    void Move(float speed, Vector3 destination) // Move to a certain location
+    {
+        transform.LookAt(destination);
+        transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
+    }
+
+    Vector3 GetBallLocation()
+    {
+        return GameObject.FindGameObjectWithTag("Ball").transform.position;
     }
 
     public void SetTarget(GameObject target)

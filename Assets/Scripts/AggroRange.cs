@@ -32,10 +32,4 @@ public class AggroRange : MonoBehaviour
     {
         soldier.SetTarget(target);
     }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(gameObject.transform.position, aggroRange);
-    }
 }

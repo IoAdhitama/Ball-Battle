@@ -15,7 +15,6 @@ public class Ball : MonoBehaviour
         game.OnMatchStart += HandleOnMatchStart;
         game.OnMatchEnd += HandleOnMatchEnd;
 
-
     }
     
     void HandleOnMatchStart(object sender, System.EventArgs e)
