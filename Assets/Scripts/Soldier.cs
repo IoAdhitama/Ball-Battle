@@ -18,6 +18,7 @@ public class Soldier : MonoBehaviour
 
     [SerializeField] GameObject aggroCircle;
     [SerializeField] GameObject directionIndicator;
+    [SerializeField] GameObject ballHoldHighlight;
 
     const int BALLHOLDER_LAYER = 9;
     const int ATTACKER_LAYER = 10;
@@ -152,6 +153,8 @@ public class Soldier : MonoBehaviour
                         game.ballIsPickedUp = true;
                         isHoldingBall = true;
                         SetSoldierLayer(BALLHOLDER_LAYER);
+
+                        ballHoldHighlight.SetActive(true);
                     }
                 }
                 else
@@ -230,6 +233,9 @@ public class Soldier : MonoBehaviour
         // Make it gray
         material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         isActivated = false;
+
+        // Turn off indicators if any are active
+        ballHoldHighlight.SetActive(false);
 
         // Set off the reactivation sequence based on cause of deactivation
         switch (reason)
