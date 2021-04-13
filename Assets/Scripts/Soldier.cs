@@ -17,6 +17,7 @@ public class Soldier : MonoBehaviour
     [SerializeField] float defenderReturnSpeed = 2.0f;
 
     [SerializeField] GameObject aggroCircle;
+    [SerializeField] GameObject directionIndicator;
 
     const int BALLHOLDER_LAYER = 9;
     const int ATTACKER_LAYER = 10;
@@ -121,6 +122,9 @@ public class Soldier : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Disable the direction indicator by default
+        directionIndicator.SetActive(false);
+
         // Find whether ball is being held or not, as well as its location
         Vector3 ballLocation = GetBallLocation();
 
@@ -129,8 +133,7 @@ public class Soldier : MonoBehaviour
             if (gameObject.CompareTag("Defender"))
             {
                 // Return to its original location at a faster speed
-                transform.LookAt(originalPosition);
-                transform.Translate((originalPosition - transform.position).normalized * defenderReturnSpeed * Time.deltaTime);
+                Move(defenderReturnSpeed, originalPosition);
             }
             else return;
         }
@@ -144,7 +147,7 @@ public class Soldier : MonoBehaviour
                     Move(attackerNormalSpeed, ballLocation);
 
                     // Send an event once ball is held
-                    if (Vector3.Distance(ballLocation, transform.position) <= 1.55f)
+                    if (Vector3.Distance(ballLocation, transform.position) <= 1.53f)
                     {
                         game.ballIsPickedUp = true;
                         isHoldingBall = true;
@@ -180,24 +183,33 @@ public class Soldier : MonoBehaviour
 
     void Move(float speed) // Go straight forward
     {
+        directionIndicator.SetActive(true); // Activate indicator when moving
+
         if (originalColor == new Color(0f, 1f, 1f, 1f)) // Soldier is colored blue
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.World);
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
         }
         else // We can assume that it will be colored red, since soldier will not move while it's gray/inactivated anyway
         {
-            transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
+            transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
+            transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
         }
     }
 
     void Move(float speed, Vector3 destination) // Move to a certain location
     {
+        directionIndicator.SetActive(true); // Activate indicator when moving
+
         transform.LookAt(destination);
         transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0); // Constrain the rotation of the object
+
     }
 
     private void SetSoldierLayer(int layer)
     {
+        gameObject.layer = layer;
         transform.GetChild(0).gameObject.layer = layer;
     }
 
