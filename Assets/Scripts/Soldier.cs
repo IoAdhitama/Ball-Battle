@@ -148,14 +148,14 @@ public class Soldier : MonoBehaviour
                     Move(attackerNormalSpeed, ballLocation);
 
                     // Send an event once ball is held
-                    if (Vector3.Distance(ballLocation, transform.position) <= 1.53f)
+                    /*if (Vector3.Distance(ballLocation, transform.position) <= 1.53f)
                     {
                         game.ballIsPickedUp = true;
                         isHoldingBall = true;
                         SetSoldierLayer(BALLHOLDER_LAYER);
 
                         ballHoldHighlight.SetActive(true);
-                    }
+                    }*/
                 }
                 else
                 {
@@ -267,11 +267,21 @@ public class Soldier : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.tag);
+        Debug.Log("Soldier collided with " + other);
+        if (other.CompareTag("Ball"))
+        {
+            game.ballIsPickedUp = true;
+            isHoldingBall = true;
+            SetSoldierLayer(BALLHOLDER_LAYER);
+
+            ballHoldHighlight.SetActive(true);
+        }
+
         if (isHoldingBall && other.CompareTag("Defender")) // Attacker holding a ball is caught by defender
         {
             // Event to pass the ball to another attacker
 
+            Debug.Log("Attacker has been caught.");
             DeactivateSoldier(DeactivateReason.Caught);
         }
 
@@ -280,8 +290,9 @@ public class Soldier : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (gameObject.CompareTag("Defender") && other.gameObject.GetComponent<Soldier>().isHoldingBall) // Defender catches an attacker holding a ball
+        if (gameObject.CompareTag("Defender") && other.gameObject.GetComponentInParent<Soldier>().isHoldingBall) // Defender catches an attacker holding a ball
         {
+            Debug.Log("Defender catches an attacker");
             DeactivateSoldier(DeactivateReason.Caught);
         }
     }

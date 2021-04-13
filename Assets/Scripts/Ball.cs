@@ -76,11 +76,15 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.parent.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
+        if (other.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
         {
             Debug.Log("Ball collided with an attacker");
-            transform.parent = other.transform.parent;
-            GetComponent<SphereCollider>().enabled = false;
+            transform.parent = other.transform;
+        }
+
+        if (other.CompareTag("Gate"))
+        {
+            game.ballInGoal = true;
         }
     }
 }
