@@ -14,9 +14,15 @@ public class Ball : MonoBehaviour
     {
         game.OnMatchStart += HandleOnMatchStart;
         game.OnMatchEnd += HandleOnMatchEnd;
-
+        game.OnBallPickedUp += HandleOnBallPickedUp;
     }
-    
+
+    private void HandleOnBallPickedUp(object sender, System.EventArgs e)
+    {
+        isHeld = true;
+        hasBeenPickedUp = true;
+    }
+
     void HandleOnMatchStart(object sender, System.EventArgs e)
     {
         StartCoroutine(DelayBallSpawning());
@@ -58,5 +64,13 @@ public class Ball : MonoBehaviour
     {
         yield return new WaitForSeconds(0.001f);
         SpawnBall();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
+        {
+            transform.parent = other.transform;
+        }
     }
 }

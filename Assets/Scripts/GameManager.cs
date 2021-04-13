@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
 
     public event EventHandler OnMatchStart;
     public event EventHandler OnMatchEnd;
+    public event EventHandler OnBallPickedUp;
 
     private GameState currentGameState = GameState.PreGame;
 
