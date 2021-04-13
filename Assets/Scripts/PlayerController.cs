@@ -61,6 +61,12 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         else
-        { return false; }
+        {
+            if (gameManager.GetGameState() == GameManager.GameState.RedAttack)
+            {
+                return false;
+            }
+        }
+        return false;
     }
 }

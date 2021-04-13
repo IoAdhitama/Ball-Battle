@@ -22,11 +22,9 @@ public class Soldier : MonoBehaviour
     bool isActivated;
     bool isBallHeld;
     public bool isHoldingBall;
-    public event EventHandler OnBallPickedUp;
 
     Vector3 gateDestination;
     Transform opponentToChase;
-    Transform ballLocation;
 
     enum DeactivateReason
     {
@@ -38,6 +36,7 @@ public class Soldier : MonoBehaviour
     Material material;
 
     SoldierManager soldierManager;
+    GameManager game;
 
     // Start is called before the first frame update
     void Start()
@@ -49,10 +48,26 @@ public class Soldier : MonoBehaviour
         originalPosition = transform.position;
 
         soldierManager = GameObject.Find("GameManager").GetComponent<SoldierManager>();
+        game = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-        gameObject.tag = "Attacker";
+        // Subscribe to events
+        game.OnBallPickedUp += Game_OnBallPickedUp;
+        game.OnMatchEnd += Game_OnMatchEnd;
 
+        // Soldier is inactivated for a certain time after being spawned
         DeactivateSoldier(DeactivateReason.Spawn);
+    }
+
+    private void Game_OnMatchEnd(object sender, EventArgs e)
+    {
+        game.OnBallPickedUp -= Game_OnBallPickedUp;
+        game.OnMatchEnd -= Game_OnMatchEnd;
+        Destroy(gameObject);
+    }
+
+    private void Game_OnBallPickedUp(object sender, EventArgs e)
+    {
+        isBallHeld = true;
     }
 
     public void SetSoldierParameters(SoldierManager.SoldierTeam team, SoldierManager.SoldierRole role)
@@ -78,9 +93,11 @@ public class Soldier : MonoBehaviour
             case SoldierManager.SoldierRole.Attacker:
                 gameObject.tag = "Attacker";
                 break;
+
             case SoldierManager.SoldierRole.Defender:
                 gameObject.tag = "Defender";
                 break;
+
             default:
                 break;
         }
@@ -112,11 +129,10 @@ public class Soldier : MonoBehaviour
                     Move(attackerNormalSpeed, ballLocation);
 
                     // Send an event once ball is held
-                    if (Vector3.Distance(ballLocation, transform.position) <= 0.5f)
+                    if (Vector3.Distance(ballLocation, transform.position) <= 1.55f)
                     {
-                        OnBallPickedUp?.Invoke(this, EventArgs.Empty);
+                        game.ballIsPickedUp = true;
                         isHoldingBall = true;
-                        isBallHeld = true;
                     }
                 }
                 else
@@ -148,11 +164,11 @@ public class Soldier : MonoBehaviour
     {
         if (originalColor == new Color(0f, 1f, 1f, 1f)) // Soldier is colored blue
         {
-            transform.Translate(Vector3.forward, Space.World);
+            transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.World);
         }
         else // We can assume that it will be colored red, since soldier will not move while it's gray/inactivated anyway
         {
-            transform.Translate(Vector3.back, Space.World);
+            transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
         }
     }
 
@@ -210,6 +226,7 @@ public class Soldier : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.tag);
         if (isHoldingBall && other.CompareTag("Defender")) // Attacker holding a ball is caught by defender
         {
             // Event to pass the ball to another attacker

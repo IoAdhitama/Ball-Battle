@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text matchScoreText;
     #endregion
 
+    #region States
     public enum GameState
     {
         PreGame, // Preparing for match or next round
@@ -29,10 +30,16 @@ public class GameManager : MonoBehaviour
         Timeout, // Time out, ball not in opponent gate, match draw
         AttackerOut // Attacker caught, no other attacker to pass ball to, defender win
     }
+    #endregion
 
+    #region Events and Event Triggers
     public event EventHandler OnMatchStart;
     public event EventHandler OnMatchEnd;
     public event EventHandler OnBallPickedUp;
+
+    public bool ballIsPickedUp;
+    public bool attackerIsCaught;
+    #endregion
 
     private GameState currentGameState = GameState.PreGame;
 
@@ -40,6 +47,7 @@ public class GameManager : MonoBehaviour
     int matchCount = 0;
     int blueWinCount = 0;
     int redWinCount = 0;
+    [SerializeField] int matchTimeLimit = 140;
 
     public GameState GetGameState()
     {
@@ -58,6 +66,14 @@ public class GameManager : MonoBehaviour
         OnMatchStart += HandleMatchStart;
 
         PreMatch();
+    }
+
+    private void Update() // Listen for event triggers
+    {
+        if (ballIsPickedUp)
+        {
+            OnBallPickedUp?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void PreMatch()
@@ -97,7 +113,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Start the match timer
-        StartCoroutine(MatchTimeCountdown(140));
+        StartCoroutine(MatchTimeCountdown(matchTimeLimit));
     }
 
     IEnumerator MatchTimeCountdown(int matchTime)
@@ -164,6 +180,9 @@ public class GameManager : MonoBehaviour
 
         // Other stuffs that happens on end of match
         matchCount++;
+
+        // Reset trigger state
+        ballIsPickedUp = false;
 
         // Revert to prematch state
         currentGameState = GameState.PreGame;

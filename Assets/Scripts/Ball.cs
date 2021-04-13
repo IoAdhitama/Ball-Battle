@@ -12,9 +12,17 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Event subscriptions
         game.OnMatchStart += HandleOnMatchStart;
         game.OnMatchEnd += HandleOnMatchEnd;
         game.OnBallPickedUp += HandleOnBallPickedUp;
+    }
+    private void Update()
+    {
+        if (isHeld)
+        {
+            
+        }
     }
 
     private void HandleOnBallPickedUp(object sender, System.EventArgs e)
@@ -68,9 +76,11 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
+        if (other.transform.parent.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
         {
-            transform.parent = other.transform;
+            Debug.Log("Ball collided with an attacker");
+            transform.parent = other.transform.parent;
+            GetComponent<SphereCollider>().enabled = false;
         }
     }
 }
