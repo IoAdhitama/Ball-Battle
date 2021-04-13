@@ -16,6 +16,12 @@ public class Soldier : MonoBehaviour
     [SerializeField] float carryingSpeed = 0.75f;
     [SerializeField] float defenderReturnSpeed = 2.0f;
 
+    [SerializeField] GameObject aggroCircle;
+
+    const int BALLHOLDER_LAYER = 9;
+    const int ATTACKER_LAYER = 10;
+    const int DEFENDER_LAYER = 11;
+
     Vector3 originalPosition;
     Color originalColor;
 
@@ -92,16 +98,25 @@ public class Soldier : MonoBehaviour
         {
             case SoldierManager.SoldierRole.Attacker:
                 gameObject.tag = "Attacker";
+
+                // Set the layer of the child objects (for collision detection)
+                SetSoldierLayer(ATTACKER_LAYER);
+                aggroCircle.SetActive(false);
                 break;
 
             case SoldierManager.SoldierRole.Defender:
                 gameObject.tag = "Defender";
+
+                SetSoldierLayer(DEFENDER_LAYER);
+
                 break;
 
             default:
                 break;
         }
     }
+
+
 
     // Update is called once per frame
     void Update()
@@ -133,6 +148,7 @@ public class Soldier : MonoBehaviour
                     {
                         game.ballIsPickedUp = true;
                         isHoldingBall = true;
+                        SetSoldierLayer(BALLHOLDER_LAYER);
                     }
                 }
                 else
@@ -151,8 +167,10 @@ public class Soldier : MonoBehaviour
             {
                 if (gameObject.CompareTag("Defender"))
                 {
+                    // On standby, waiting for target
                     if (opponentToChase != null)
                     {
+                        aggroCircle.SetActive(false);
                         Move(defenderNormalSpeed, opponentToChase.position);
                     }
                 }
@@ -176,6 +194,11 @@ public class Soldier : MonoBehaviour
     {
         transform.LookAt(destination);
         transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
+    }
+
+    private void SetSoldierLayer(int layer)
+    {
+        transform.GetChild(0).gameObject.layer = layer;
     }
 
     Vector3 GetBallLocation()

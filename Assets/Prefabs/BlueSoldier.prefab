@@ -161,6 +161,7 @@ MonoBehaviour:
   defenderNormalSpeed: 1
   carryingSpeed: 0.75
   defenderReturnSpeed: 2
+  aggroCircle: {fileID: 1321048118}
   isHoldingBall: 0
   Renderer: {fileID: 6755503215275496652}
 --- !u!1 &6755503215275496651
