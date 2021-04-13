@@ -31,11 +31,11 @@ public class PlayerController : MonoBehaviour
                 {
                     if (IsAttacker())
                     {
-                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Attacker);
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Attacker, raycastHit.point);
                     }
                     else
                     {
-                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Defender);
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Defender, raycastHit.point);
                     }
                 }
             }   

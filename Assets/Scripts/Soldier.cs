@@ -15,12 +15,28 @@ public class Soldier : MonoBehaviour
     [SerializeField] float carryingSpeed = 0.75f;
     [SerializeField] float defenderReturnSpeed = 2.0f;
 
-    public MeshRenderer Renderer;
-    Material material;
-
+    Vector3 originalPosition;
     Color originalColor;
 
     bool isActivated;
+    bool isBallHeld;
+    bool isHoldingBall;
+
+    enum SoldierRole
+    {
+        Attacker,
+        Defender
+    }
+    SoldierManager.SoldierRole soldierRole;
+
+    enum DeactivateReason
+    {
+        Spawn,
+        Caught
+    }
+
+    public MeshRenderer Renderer;
+    Material material;
 
     SoldierManager soldierManager;
 
@@ -29,13 +45,61 @@ public class Soldier : MonoBehaviour
     {
         // Get the original color of the soldier for when it is reactivated
         material = Renderer.material;
-        originalColor = material.color;
 
-        // Set its status to inactivated
-        isActivated = false;
+        // Get the original location of the soldier (for defenders)
+        originalPosition = transform.position;
 
         soldierManager = GameObject.Find("GameManager").GetComponent<SoldierManager>();
-        soldierManager.HandleInactivation(SoldierManager.SoldierRole.Attacker, SoldierManager.ReactivationType.Spawning);
+
+        DeactivateSoldier(DeactivateReason.Spawn);
+    }
+
+    public void SetSoldierParameters(SoldierManager.SoldierTeam team, SoldierManager.SoldierRole role)
+    {
+        switch (team)
+        {
+            case SoldierManager.SoldierTeam.Blue:
+                originalColor = new Vector4(0f, 1f, 1f, 1f);
+                break;
+            case SoldierManager.SoldierTeam.Red:
+                originalColor = new Vector4(0.6415f, 0f, 0f, 1f);
+                break;
+            default:
+                break;
+        }
+
+        soldierRole = role;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!isActivated)
+        {
+            
+        }
+    }
+
+    void DeactivateSoldier(DeactivateReason reason)
+    {
+        // Make it gray
+        material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        isActivated = false;
+
+        // Set off the reactivation sequence based on cause of deactivation
+        switch (reason)
+        {
+            case DeactivateReason.Spawn:
+                soldierManager.HandleInactivation(soldierRole, SoldierManager.ReactivationType.Spawning);
+                break;
+
+            case DeactivateReason.Caught:
+                soldierManager.HandleInactivation(soldierRole, SoldierManager.ReactivationType.Reactivating);
+                break;
+
+            default:
+                break;
+        }
         soldierManager.OnReactivation += SoldierManager_OnReactivation;
     }
 
@@ -50,21 +114,6 @@ public class Soldier : MonoBehaviour
         soldierManager.OnReactivation -= SoldierManager_OnReactivation;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (!isActivated)
-        {
-
-        }
-    }
-
-    void DeactivateSoldier()
-    {
-        // Make it gray
-        material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (!isActivated)
@@ -73,7 +122,13 @@ public class Soldier : MonoBehaviour
         }
         else
         {
+            // Collides with a ball
 
+            // Collides with other team/role
+            if (other.GetComponent<Soldier>().soldierRole != this.soldierRole)
+            {
+                DeactivateSoldier(DeactivateReason.Caught);
+            }
         }
     }
 }

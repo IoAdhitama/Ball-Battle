@@ -53,7 +53,7 @@ public class SoldierManager : MonoBehaviour
     }
 
     // Spawn soldier of a certain team of a certain role
-    public void SpawnSoldier(SoldierTeam team, SoldierRole role)
+    public void SpawnSoldier(SoldierTeam team, SoldierRole role, Vector3 position)
     {
         switch (team)
         {
@@ -65,6 +65,9 @@ public class SoldierManager : MonoBehaviour
                         {
                             Debug.Log("Blue team attacker spawned.");
                             blueTeamEnergyBar.SpendEnergy(attackerCost);
+
+                            GameObject soldier = Instantiate(soldierPrefab, position, Quaternion.identity);
+                            soldier.GetComponent<Soldier>().SetSoldierParameters(team, role);
                         }
                         break;
 
@@ -73,6 +76,7 @@ public class SoldierManager : MonoBehaviour
                         {
                             Debug.Log("Blue team defender spawned.");
                             blueTeamEnergyBar.SpendEnergy(defenderCost);
+                            Instantiate(soldierPrefab, position, Quaternion.identity);
                         }
                         break;
 
