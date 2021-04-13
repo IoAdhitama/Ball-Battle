@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public event EventHandler OnMatchStart;
     public event EventHandler OnMatchEnd;
 
-    public GameState currentGameState = GameState.PreGame;
+    private GameState currentGameState = GameState.PreGame;
 
     // Match related infos
     int matchCount = 0;

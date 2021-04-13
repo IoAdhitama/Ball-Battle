@@ -11,6 +11,8 @@ public class EnergyBar : MonoBehaviour
 
     private EnergySystem energySystem;
 
+    public float energy;
+
     private static readonly Vector4 UNFILLED_COLOR = new Vector4(0f, 0.5019f, 0.5019f, 1f); // Hex code: #008080
     private static readonly Vector4 FILLED_COLOR = new Vector4(0f, 1f, 1f, 1f); // Hex code: #00FFFF
 
@@ -25,9 +27,9 @@ public class EnergyBar : MonoBehaviour
     private void Update()
     {
         energySystem.Update();
+        energy = energySystem.GetEnergy();
 
         // Fill each segment
-        float energy = energySystem.GetEnergy();
         int energySegmentCount = 6;
         for (int i = 0; i < energySegmentCount; i++)
         {
@@ -59,6 +61,16 @@ public class EnergyBar : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool SpendEnergy(int amount)
+    {
+        if (energy >= amount)
+        {
+            energySystem.SpendEnergy(amount);
+            return true;
+        }
+        else return false;
     }
 
     private void Game_OnMatchStart(object sender, System.EventArgs e)

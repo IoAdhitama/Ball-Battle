@@ -7,26 +7,60 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] LayerMask layerMask;
 
+    SoldierManager soldierManager;
     [SerializeField] GameManager gameManager;
-    [SerializeField] GameObject soldierPrefab;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        soldierManager = GetComponent<SoldierManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
         // Get input, check whether it is a valid location for spawning soldiers
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask))
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log(raycastHit);
-        }
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        // If it is, spawn a soldier based on the current game state
-        Instantiate(soldierPrefab, raycastHit.point, Quaternion.identity);
+            // Check the state of the game, then react accordingly
+            if (IsInMatch())
+            {
+                if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask))
+                {
+                    if (IsAttacker())
+                    {
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Attacker);
+                    }
+                    else
+                    {
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Defender);
+                    }
+                }
+            }   
+        }        
+    }
+
+    bool IsInMatch()
+    {
+        if (gameManager.GetGameState() == GameManager.GameState.BlueAttack || gameManager.GetGameState() == GameManager.GameState.RedAttack)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool IsAttacker()
+    {
+        if (gameManager.GetGameState() == GameManager.GameState.BlueAttack)
+        {
+            return true;
+        }
+        else
+        { return false; }
     }
 }
