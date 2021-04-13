@@ -76,7 +76,9 @@ public class SoldierManager : MonoBehaviour
                         {
                             Debug.Log("Blue team defender spawned.");
                             blueTeamEnergyBar.SpendEnergy(defenderCost);
-                            Instantiate(soldierPrefab, position, Quaternion.identity);
+
+                            GameObject soldier = Instantiate(soldierPrefab, position, Quaternion.identity);
+                            soldier.GetComponent<Soldier>().SetSoldierParameters(team, role);
                         }
                         break;
 
