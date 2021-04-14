@@ -22,10 +22,8 @@ public class AggroRange : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Aggro circle collided with " + other);
         if (other.GetComponentInParent<Soldier>().isHoldingBall) // Attacker with the ball is found!
         {
-            Debug.Log("Aggro circle collided with an attacker carrying a ball!");
             SetTarget(other.gameObject);
         }
         else return;

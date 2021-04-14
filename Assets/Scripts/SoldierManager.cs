@@ -65,7 +65,6 @@ public class SoldierManager : MonoBehaviour
                     case SoldierRole.Attacker:
                         if (blueTeamEnergyBar.energy >= attackerCost)
                         {
-                            Debug.Log("Blue team attacker spawned.");
                             blueTeamEnergyBar.SpendEnergy(attackerCost);
 
                             GameObject soldier = Instantiate(soldierPrefab, position, Quaternion.identity);
@@ -76,7 +75,6 @@ public class SoldierManager : MonoBehaviour
                     case SoldierRole.Defender:
                         if (blueTeamEnergyBar.energy >= defenderCost)
                         {
-                            Debug.Log("Blue team defender spawned.");
                             blueTeamEnergyBar.SpendEnergy(defenderCost);
 
                             GameObject soldier = Instantiate(soldierPrefab, position, Quaternion.identity);
@@ -95,7 +93,6 @@ public class SoldierManager : MonoBehaviour
                     case SoldierRole.Attacker:
                         if (redTeamEnergyBar.energy >= attackerCost)
                         {
-                            Debug.Log("Red team attacker spawned.");
                             redTeamEnergyBar.SpendEnergy(attackerCost);
                         }
                         break;
@@ -103,7 +100,6 @@ public class SoldierManager : MonoBehaviour
                     case SoldierRole.Defender:
                         if (blueTeamEnergyBar.energy >= defenderCost)
                         {
-                            Debug.Log("Red team defender spawned.");
                             blueTeamEnergyBar.SpendEnergy(defenderCost);
                         }
                         break;
@@ -116,11 +112,5 @@ public class SoldierManager : MonoBehaviour
             default:
                 break;
         }
-    }
-
-    void ReactivateSoldier()
-    {
-        // Reactivate the soldier
-        OnReactivation?.Invoke(this, EventArgs.Empty);
     }
 }

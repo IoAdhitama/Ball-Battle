@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     int blueWinCount = 0;
     int redWinCount = 0;
     [SerializeField] int matchTimeLimit = 140;
+    [SerializeField] int maxMatches = 5;
 
     public GameState GetGameState()
     {
@@ -75,14 +76,12 @@ public class GameManager : MonoBehaviour
     {
         if (ballIsPickedUp)
         {
-            Debug.Log("OnBallPickedUp invoked");
             OnBallPickedUp?.Invoke(this, EventArgs.Empty);
             ballIsPickedUp = false;
         }
 
         if (ballDropped)
         {
-            Debug.Log("OnBallDropped invoked");
             OnBallDropped?.Invoke(this, EventArgs.Empty);
             ballDropped = false;
         }
@@ -121,7 +120,6 @@ public class GameManager : MonoBehaviour
 
     private void HandleMatchStart(object sender, EventArgs e)
     {
-        Debug.Log("Match is starting");
         Time.timeScale = 1f;
         // Disable the pre match UI
         preMatchUI.SetActive(false);
@@ -212,7 +210,10 @@ public class GameManager : MonoBehaviour
         ballIsPickedUp = false;
 
         // Revert to prematch state
-        currentGameState = GameState.PreGame;
-        PreMatch();
+        if (matchCount <= maxMatches)
+        {
+            currentGameState = GameState.PreGame;
+            PreMatch();
+        }
     }
 }

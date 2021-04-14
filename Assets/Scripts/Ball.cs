@@ -44,7 +44,6 @@ public class Ball : MonoBehaviour
 
         if (passTarget != null)
         {
-            Debug.Log("Passing ball");
             transform.LookAt(passTargetLocation);
             transform.Translate(Vector3.forward * ballSpeed * Time.deltaTime);
         }
@@ -114,8 +113,6 @@ public class Ball : MonoBehaviour
         float distance = Mathf.Infinity;
         GameObject nearest = null;
 
-        Debug.Log(validTargets.Count + " pass targets found.");
-
         if (validTargets.Count != 0)
         {
             foreach (GameObject target in validTargets)
@@ -157,7 +154,6 @@ public class Ball : MonoBehaviour
     {
         if (other.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
         {
-            Debug.Log("Ball collided with an attacker");
             transform.parent = other.transform;
         }
 

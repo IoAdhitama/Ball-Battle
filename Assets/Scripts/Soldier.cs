@@ -231,8 +231,6 @@ public class Soldier : MonoBehaviour
     {
         SoldierRole soldierRole = gameObject.CompareTag("Attacker") ? SoldierRole.Attacker : SoldierRole.Defender;
 
-        Debug.Log(soldierRole + " Deactivated");
-
         // Make it gray
         material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         isActivated = false;
@@ -322,7 +320,6 @@ public class Soldier : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Soldier collided with " + other);
         if (other.CompareTag("Ball"))
         {
             game.ballIsPickedUp = true;
@@ -335,9 +332,6 @@ public class Soldier : MonoBehaviour
 
         if (isHoldingBall && other.CompareTag("Defender")) // Attacker holding a ball is caught by defender
         {
-            // Event to pass the ball to another attacker
-
-            Debug.Log("Attacker has been caught.");
             DeactivateSoldier(DeactivateReason.Caught);
         }
 
@@ -348,7 +342,6 @@ public class Soldier : MonoBehaviour
 
         if (gameObject.CompareTag("Defender") && other.gameObject.GetComponentInParent<Soldier>().isHoldingBall) // Defender catches an attacker holding a ball
         {
-            Debug.Log("Defender catches an attacker");
             DeactivateSoldier(DeactivateReason.Caught);
 
             // Only this trigger, where the defender caught the attacker is fired, so we deactivate the other soldier as well.
