@@ -1007,6 +1007,7 @@ GameObject:
   - component: {fileID: 226385988}
   - component: {fileID: 226385990}
   - component: {fileID: 226385991}
+  - component: {fileID: 226385992}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1035,7 +1036,8 @@ MonoBehaviour:
   allAttackerOut: 0
   ballInGoal: 0
   ballDropped: 0
-  matchTimeLimit: 60
+  matchTimeLimit: 140
+  maxMatches: 5
 --- !u!4 &226385989
 Transform:
   m_ObjectHideFlags: 0
@@ -1081,6 +1083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierPrefab: {fileID: 6755503214658766664, guid: d06ac21d5954c2641a47cdcd0205c75e,
     type: 3}
+  enemySoldierPrefab: {fileID: 0}
   attackerCost: 2
   defenderCost: 3
   spawnTime: 0.5
@@ -1091,6 +1094,19 @@ MonoBehaviour:
   carryingSpeed: 0.75
   defenderReturnSpeed: 2
   isBallHeld: 0
+--- !u!114 &226385992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226385987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f112ebf17fa488942bc6d07255c8b59e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
 --- !u!1 &301906639
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public class SoldierManager : MonoBehaviour
     EnergyBar redTeamEnergyBar;
 
     [SerializeField] GameObject soldierPrefab;
+    [SerializeField] GameObject enemySoldierPrefab;
 
     [Header("Soldier Stats")]
     [SerializeField] int attackerCost = 2;
@@ -94,6 +95,9 @@ public class SoldierManager : MonoBehaviour
                         if (redTeamEnergyBar.energy >= attackerCost)
                         {
                             redTeamEnergyBar.SpendEnergy(attackerCost);
+
+                            GameObject soldier = Instantiate(enemySoldierPrefab, position, Quaternion.identity);
+                            soldier.GetComponent<Soldier>().SetSoldierParameters(team, role);
                         }
                         break;
 
@@ -101,6 +105,9 @@ public class SoldierManager : MonoBehaviour
                         if (blueTeamEnergyBar.energy >= defenderCost)
                         {
                             blueTeamEnergyBar.SpendEnergy(defenderCost);
+
+                            GameObject soldier = Instantiate(enemySoldierPrefab, position, Quaternion.identity);
+                            soldier.GetComponent<Soldier>().SetSoldierParameters(team, role);
                         }
                         break;
 
