@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Get input, check whether it is a valid location for spawning soldiers
+        // PC controls
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -39,7 +40,30 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }   
-        }        
+        }
+
+        // Touch controls
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            Ray ray = mainCamera.ScreenPointToRay(touch.position);
+
+            // Check the state of the game, then react accordingly
+            if (IsInMatch())
+            {
+                if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask))
+                {
+                    if (IsAttacker())
+                    {
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Attacker, raycastHit.point);
+                    }
+                    else
+                    {
+                        soldierManager.SpawnSoldier(SoldierManager.SoldierTeam.Blue, SoldierManager.SoldierRole.Defender, raycastHit.point);
+                    }
+                }
+            }
+        }
     }
 
     bool IsInMatch()

@@ -386,7 +386,7 @@ public class Soldier : MonoBehaviour
         game.OnBallDropped -= Game_OnBallDropped;
         game.OnMatchEnd -= Game_OnMatchEnd;
         
-        Destroy(gameObject);
+        Destroy(gameObject, 0.1f);
         
     }
 }
