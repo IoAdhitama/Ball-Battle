@@ -23,6 +23,7 @@ public class Soldier : MonoBehaviour
     const int BALLHOLDER_LAYER = 9;
     const int ATTACKER_LAYER = 10;
     const int DEFENDER_LAYER = 11;
+    const int DEACTIVATED_LAYER = 13;
 
     Vector3 originalPosition;
     Color originalColor;
@@ -237,6 +238,16 @@ public class Soldier : MonoBehaviour
         // Turn off indicators if any are active
         ballHoldHighlight.SetActive(false);
 
+        // If the one deactivated is the attacker holding the ball, set event to pass the ball
+        if (isHoldingBall)
+        {
+            isHoldingBall = false;
+            game.ballDropped = true;
+        }
+
+        // Set layer to deactivated so it can let every soldier pass through
+        SetSoldierLayer(DEACTIVATED_LAYER);
+
         // Set off the reactivation sequence based on cause of deactivation
         switch (reason)
         {
@@ -256,13 +267,23 @@ public class Soldier : MonoBehaviour
 
     private void SoldierManager_OnReactivation(object sender, System.EventArgs e)
     {
+        soldierManager.OnReactivation -= SoldierManager_OnReactivation;
+
         // Set to activated
         isActivated = true;
 
         // Return the color to its original color
         material.color = originalColor;
 
-        soldierManager.OnReactivation -= SoldierManager_OnReactivation;
+        // Return its layer to the original one
+        if (gameObject.CompareTag("Attacker"))
+        {
+            SetSoldierLayer(ATTACKER_LAYER);
+        }
+        else
+        {
+            SetSoldierLayer(DEFENDER_LAYER);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -294,6 +315,9 @@ public class Soldier : MonoBehaviour
         {
             Debug.Log("Defender catches an attacker");
             DeactivateSoldier(DeactivateReason.Caught);
+
+            // Only this trigger, where the defender caught the attacker is fired, so we deactivate the other soldier as well.
+            other.gameObject.GetComponentInParent<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
         }
     }
 }
