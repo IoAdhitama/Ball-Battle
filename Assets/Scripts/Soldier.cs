@@ -40,6 +40,18 @@ public class Soldier : MonoBehaviour
         Caught
     }
 
+    public enum ReactivationType
+    {
+        Spawning,
+        Reactivating
+    }
+
+    public enum SoldierRole
+    {
+        Attacker,
+        Defender
+    }
+
     public MeshRenderer Renderer;
     Material material;
 
@@ -217,7 +229,9 @@ public class Soldier : MonoBehaviour
 
     void DeactivateSoldier(DeactivateReason reason)
     {
-        SoldierManager.SoldierRole soldierRole = gameObject.CompareTag("Attacker") ? SoldierManager.SoldierRole.Attacker : SoldierManager.SoldierRole.Defender;
+        SoldierRole soldierRole = gameObject.CompareTag("Attacker") ? SoldierRole.Attacker : SoldierRole.Defender;
+
+        Debug.Log(soldierRole + " Deactivated");
 
         // Make it gray
         material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -241,23 +255,48 @@ public class Soldier : MonoBehaviour
         switch (reason)
         {
             case DeactivateReason.Spawn:
-                soldierManager.HandleInactivation(soldierRole, SoldierManager.ReactivationType.Spawning);
+                HandleInactivation(soldierRole, ReactivationType.Spawning);
                 break;
 
             case DeactivateReason.Caught:
-                soldierManager.HandleInactivation(soldierRole, SoldierManager.ReactivationType.Reactivating);
+                HandleInactivation(soldierRole, ReactivationType.Reactivating);
                 break;
 
             default:
                 break;
         }
-        soldierManager.OnReactivation += SoldierManager_OnReactivation;
     }
 
-    private void SoldierManager_OnReactivation(object sender, System.EventArgs e)
+    public void HandleInactivation(SoldierRole role, ReactivationType type)
     {
-        soldierManager.OnReactivation -= SoldierManager_OnReactivation;
+        // Reactivation sequence for the soldier
+        switch (type)
+        {
+            case ReactivationType.Spawning:
+                StartCoroutine(ReactivateCountdown(spawnTime));
+                break;
 
+            case ReactivationType.Reactivating:
+                switch (role)
+                {
+                    case SoldierRole.Attacker:
+                        StartCoroutine(ReactivateCountdown(attackerReactivateTime));
+                        break;
+
+                    case SoldierRole.Defender:
+                        StartCoroutine(ReactivateCountdown(defenderReactivateTime));
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ReactivateSoldier()
+    {
         // Set to activated
         isActivated = true;
 
@@ -273,6 +312,12 @@ public class Soldier : MonoBehaviour
         {
             SetSoldierLayer(DEFENDER_LAYER);
         }
+    }
+
+    IEnumerator ReactivateCountdown(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ReactivateSoldier();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -315,7 +360,6 @@ public class Soldier : MonoBehaviour
     {
         game.OnBallPickedUp -= Game_OnBallPickedUp;
         game.OnMatchEnd -= Game_OnMatchEnd;
-        soldierManager.OnReactivation -= SoldierManager_OnReactivation;
         Destroy(gameObject);
     }
 }

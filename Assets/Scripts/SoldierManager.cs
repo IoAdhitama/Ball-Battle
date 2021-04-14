@@ -40,12 +40,6 @@ public class SoldierManager : MonoBehaviour
         Red
     }
 
-    public enum ReactivationType
-    {
-        Spawning,
-        Reactivating
-    }
-
     private void Awake()
     {
         blueTeamEnergyBar = GameObject.Find("PlayerEnergyBar").GetComponent<EnergyBar>();
@@ -122,40 +116,6 @@ public class SoldierManager : MonoBehaviour
             default:
                 break;
         }
-    }
-
-    public void HandleInactivation(SoldierRole role, ReactivationType type)
-    {
-        // Reactivation sequence for the soldier
-        switch (type)
-        {
-            case ReactivationType.Spawning:
-                StartCoroutine(ReactivateCountdown(spawnTime));
-                break;
-
-            case ReactivationType.Reactivating:
-                switch (role)
-                {
-                    case SoldierRole.Attacker:
-                        StartCoroutine(ReactivateCountdown(attackerReactivateTime));
-                        break;
-
-                    case SoldierRole.Defender:
-                        StartCoroutine(ReactivateCountdown(defenderReactivateTime));
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    IEnumerator ReactivateCountdown(float time)
-    {
-        yield return new WaitForSeconds(time);
-        ReactivateSoldier();
     }
 
     void ReactivateSoldier()
