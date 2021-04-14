@@ -26,7 +26,7 @@ public class SoldierManager : MonoBehaviour
     [SerializeField] float defenderReturnSpeed = 2.0f;
 
     public event EventHandler OnReactivation;
-
+    public bool isBallHeld;
 
     public enum SoldierRole
     {
@@ -50,6 +50,14 @@ public class SoldierManager : MonoBehaviour
     {
         blueTeamEnergyBar = GameObject.Find("PlayerEnergyBar").GetComponent<EnergyBar>();
         redTeamEnergyBar = GameObject.Find("EnemyEnergyBar").GetComponent<EnergyBar>();
+
+        GameManager game = GetComponent<GameManager>();
+        game.OnBallDropped += Game_OnBallDropped;
+    }
+
+    private void Game_OnBallDropped(object sender, EventArgs e)
+    {
+        isBallHeld = false;
     }
 
     // Spawn soldier of a certain team of a certain role

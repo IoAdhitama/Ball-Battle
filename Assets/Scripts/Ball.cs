@@ -12,7 +12,8 @@ public class Ball : MonoBehaviour
 
     string attackerTag = "Attacker";
 
-    Vector3 passTarget;
+    GameObject passTarget;
+    Vector3 passTargetLocation;
     const int ATTACKER_LAYER = 10;
 
     // Start is called before the first frame update
@@ -27,16 +28,32 @@ public class Ball : MonoBehaviour
 
     private void HandleOnBallDropped(object sender, System.EventArgs e)
     {
+        transform.parent = null; // Un-child the ball
+        isHeld = false;
         PassBall();
     }
 
     private void Update()
     {
-        
+        if (transform.parent != null)
+        {
+            gameObject.layer = 9;
+            isHeld = false;
+        }
+        else gameObject.layer = 12;
+
+        if (passTarget != null)
+        {
+            Debug.Log("Passing ball");
+            transform.LookAt(passTargetLocation);
+            transform.Translate(Vector3.forward * ballSpeed * Time.deltaTime);
+        }
     }
 
     private void HandleOnBallPickedUp(object sender, System.EventArgs e)
     {
+        passTarget = null; // Nullify pass target when it is held (As it has no need to pass the ball)
+        // game.ballDropped = false;
         isHeld = true;
         hasBeenPickedUp = true;
     }
@@ -74,9 +91,10 @@ public class Ball : MonoBehaviour
     private void PassBall()
     {
         Debug.Log("Ball passed.");
-        FindNearestTarget();
-        transform.LookAt(passTarget);
-        transform.Translate(Vector3.forward * ballSpeed * Time.deltaTime, Space.Self);
+        if (passTarget == null)
+        {
+            FindNearestTarget();
+        }
     }
 
     private void FindNearestTarget()
@@ -109,7 +127,8 @@ public class Ball : MonoBehaviour
                     nearest = target;
                 }
             }
-            passTarget = nearest.transform.position;
+            passTarget = nearest;
+            passTargetLocation = nearest.transform.position;
         }
         else
         {

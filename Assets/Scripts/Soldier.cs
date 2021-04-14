@@ -29,7 +29,6 @@ public class Soldier : MonoBehaviour
     Color originalColor;
 
     bool isActivated;
-    bool isBallHeld;
     public bool isHoldingBall;
 
     Vector3 gateDestination;
@@ -61,22 +60,21 @@ public class Soldier : MonoBehaviour
 
         // Subscribe to events
         game.OnBallPickedUp += Game_OnBallPickedUp;
+        game.OnBallDropped += Game_OnBallDropped;
         game.OnMatchEnd += Game_OnMatchEnd;
 
         // Soldier is inactivated for a certain time after being spawned
         DeactivateSoldier(DeactivateReason.Spawn);
     }
 
-    private void Game_OnMatchEnd(object sender, EventArgs e)
+    private void Game_OnBallDropped(object sender, EventArgs e)
     {
-        game.OnBallPickedUp -= Game_OnBallPickedUp;
-        game.OnMatchEnd -= Game_OnMatchEnd;
-        Destroy(gameObject);
+        soldierManager.isBallHeld = false;
     }
 
     private void Game_OnBallPickedUp(object sender, EventArgs e)
     {
-        isBallHeld = true;
+        soldierManager.isBallHeld = true;
     }
 
     public void SetSoldierParameters(SoldierManager.SoldierTeam team, SoldierManager.SoldierRole role)
@@ -143,20 +141,10 @@ public class Soldier : MonoBehaviour
         {
             if (gameObject.CompareTag("Attacker"))
             {
-                if (!isBallHeld) // If ball is not being held by attacker
+                if (!soldierManager.isBallHeld) // If ball is not being held by attacker
                 {
                     // Chase the ball
                     Move(attackerNormalSpeed, ballLocation);
-
-                    // Send an event once ball is held
-                    /*if (Vector3.Distance(ballLocation, transform.position) <= 1.53f)
-                    {
-                        game.ballIsPickedUp = true;
-                        isHoldingBall = true;
-                        SetSoldierLayer(BALLHOLDER_LAYER);
-
-                        ballHoldHighlight.SetActive(true);
-                    }*/
                 }
                 else
                 {
@@ -235,18 +223,19 @@ public class Soldier : MonoBehaviour
         material.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         isActivated = false;
 
+        // Set layer to deactivated so it can let every soldier pass through
+        SetSoldierLayer(DEACTIVATED_LAYER);
+
         // Turn off indicators if any are active
         ballHoldHighlight.SetActive(false);
 
         // If the one deactivated is the attacker holding the ball, set event to pass the ball
         if (isHoldingBall)
         {
-            isHoldingBall = false;
             game.ballDropped = true;
         }
+        isHoldingBall = false;
 
-        // Set layer to deactivated so it can let every soldier pass through
-        SetSoldierLayer(DEACTIVATED_LAYER);
 
         // Set off the reactivation sequence based on cause of deactivation
         switch (reason)
@@ -294,6 +283,7 @@ public class Soldier : MonoBehaviour
             game.ballIsPickedUp = true;
             isHoldingBall = true;
             SetSoldierLayer(BALLHOLDER_LAYER);
+    
 
             ballHoldHighlight.SetActive(true);
         }
@@ -319,5 +309,13 @@ public class Soldier : MonoBehaviour
             // Only this trigger, where the defender caught the attacker is fired, so we deactivate the other soldier as well.
             other.gameObject.GetComponentInParent<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
         }
+    }
+
+    private void Game_OnMatchEnd(object sender, EventArgs e)
+    {
+        game.OnBallPickedUp -= Game_OnBallPickedUp;
+        game.OnMatchEnd -= Game_OnMatchEnd;
+        soldierManager.OnReactivation -= SoldierManager_OnReactivation;
+        Destroy(gameObject);
     }
 }

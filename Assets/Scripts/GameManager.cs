@@ -75,22 +75,28 @@ public class GameManager : MonoBehaviour
     {
         if (ballIsPickedUp)
         {
+            Debug.Log("OnBallPickedUp invoked");
             OnBallPickedUp?.Invoke(this, EventArgs.Empty);
+            ballIsPickedUp = false;
         }
 
         if (ballDropped)
         {
+            Debug.Log("OnBallDropped invoked");
             OnBallDropped?.Invoke(this, EventArgs.Empty);
+            ballDropped = false;
         }
 
         if (ballInGoal)
         {
             EndOfMatch(EndOfMatchReason.BallInGate);
+            ballInGoal = false;
         }
 
         if (allAttackerOut)
         {
             EndOfMatch(EndOfMatchReason.AttackerOut);
+            allAttackerOut = false;
         }
     }
 
@@ -200,6 +206,9 @@ public class GameManager : MonoBehaviour
         matchCount++;
 
         // Reset trigger state
+        allAttackerOut = false;
+        ballIsPickedUp = false;
+        ballDropped = false;
         ballIsPickedUp = false;
 
         // Revert to prematch state
