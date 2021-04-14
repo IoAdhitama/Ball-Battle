@@ -5,9 +5,15 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     [SerializeField] GameManager game;
+    [SerializeField] float ballSpeed = 1.5f;
 
     bool isHeld; // Whether it is currently being held
     bool hasBeenPickedUp; // Has it ever been held during a match? For win condition purpose
+
+    string attackerTag = "Attacker";
+
+    Vector3 passTarget;
+    const int ATTACKER_LAYER = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -16,13 +22,17 @@ public class Ball : MonoBehaviour
         game.OnMatchStart += HandleOnMatchStart;
         game.OnMatchEnd += HandleOnMatchEnd;
         game.OnBallPickedUp += HandleOnBallPickedUp;
+        game.OnBallDropped += HandleOnBallDropped;
     }
+
+    private void HandleOnBallDropped(object sender, System.EventArgs e)
+    {
+        PassBall();
+    }
+
     private void Update()
     {
-        if (isHeld)
-        {
-            
-        }
+        
     }
 
     private void HandleOnBallPickedUp(object sender, System.EventArgs e)
@@ -58,6 +68,56 @@ public class Ball : MonoBehaviour
 
             default:
                 break;
+        }
+    }
+
+    private void PassBall()
+    {
+        Debug.Log("Ball passed.");
+        FindNearestTarget();
+        transform.LookAt(passTarget);
+        transform.Translate(Vector3.forward * ballSpeed * Time.deltaTime, Space.Self);
+    }
+
+    private void FindNearestTarget()
+    {
+        List<GameObject> validTargets = new List<GameObject>();
+
+        // Find the game objects by tag, then filter it by a specific layer
+        GameObject[] targets = GameObject.FindGameObjectsWithTag(attackerTag);
+        foreach (GameObject target in targets)
+        {
+            if (target.layer == ATTACKER_LAYER)
+            {
+                validTargets.Add(target);
+            }
+        }
+
+        float distance = Mathf.Infinity;
+        GameObject nearest = null;
+
+        Debug.Log(validTargets.Count + " pass targets found.");
+
+        if (validTargets.Count != 0)
+        {
+            foreach (GameObject target in validTargets)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+                if (distanceToTarget < distance)
+                {
+                    distance = distanceToTarget;
+                    nearest = target;
+                }
+            }
+            passTarget = nearest.transform.position;
+        }
+        else
+        {
+            if (hasBeenPickedUp == true)
+            {
+                game.allAttackerOut = true;
+            }
+                
         }
     }
 

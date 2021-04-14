@@ -36,9 +36,12 @@ public class GameManager : MonoBehaviour
     public event EventHandler OnMatchStart;
     public event EventHandler OnMatchEnd;
     public event EventHandler OnBallPickedUp;
+    public event EventHandler OnBallDropped;
 
     public bool ballIsPickedUp;
-    public bool attackerIsCaught;
+    public bool allAttackerOut;
+    public bool ballInGoal;
+    public bool ballDropped;
     #endregion
 
     private GameState currentGameState = GameState.PreGame;
@@ -73,6 +76,21 @@ public class GameManager : MonoBehaviour
         if (ballIsPickedUp)
         {
             OnBallPickedUp?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (ballDropped)
+        {
+            OnBallDropped?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (ballInGoal)
+        {
+            EndOfMatch(EndOfMatchReason.BallInGate);
+        }
+
+        if (allAttackerOut)
+        {
+            EndOfMatch(EndOfMatchReason.AttackerOut);
         }
     }
 
