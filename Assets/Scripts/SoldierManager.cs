@@ -15,18 +15,6 @@ public class SoldierManager : MonoBehaviour
     [SerializeField] int attackerCost = 2;
     [SerializeField] int defenderCost = 3;
 
-    [Header("(Re)Spawning attributes")]
-    [SerializeField] float spawnTime = 0.5f;
-    [SerializeField] float attackerReactivateTime = 2.5f;
-    [SerializeField] float defenderReactivateTime = 4f;
-
-    [Header("Move speed(s)")]
-    [SerializeField] float attackerNormalSpeed = 1.5f;
-    [SerializeField] float defenderNormalSpeed = 1.0f;
-    [SerializeField] float carryingSpeed = 0.75f;
-    [SerializeField] float defenderReturnSpeed = 2.0f;
-
-    public event EventHandler OnReactivation;
     public bool isBallHeld;
 
     public enum SoldierRole
@@ -48,6 +36,12 @@ public class SoldierManager : MonoBehaviour
 
         GameManager game = GetComponent<GameManager>();
         game.OnBallDropped += Game_OnBallDropped;
+        game.OnMatchEnd += Game_OnMatchEnd;
+    }
+
+    private void Game_OnMatchEnd(object sender, EventArgs e)
+    {
+        isBallHeld = false;
     }
 
     private void Game_OnBallDropped(object sender, EventArgs e)
@@ -102,9 +96,9 @@ public class SoldierManager : MonoBehaviour
                         break;
 
                     case SoldierRole.Defender:
-                        if (blueTeamEnergyBar.energy >= defenderCost)
+                        if (redTeamEnergyBar.energy >= defenderCost)
                         {
-                            blueTeamEnergyBar.SpendEnergy(defenderCost);
+                            redTeamEnergyBar.SpendEnergy(defenderCost);
 
                             GameObject soldier = Instantiate(enemySoldierPrefab, position, Quaternion.identity);
                             soldier.GetComponent<Soldier>().SetSoldierParameters(team, role);

@@ -162,6 +162,8 @@ public class GameManager : MonoBehaviour
         // Stops the simulation
         Time.timeScale = 0f;
 
+        StopAllCoroutines();
+
         // Process the reason for end of match
         switch (reason)
         {

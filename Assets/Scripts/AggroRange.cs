@@ -22,7 +22,7 @@ public class AggroRange : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponentInParent<Soldier>().isHoldingBall) // Attacker with the ball is found!
+        if (other.gameObject.layer == 9) // Attacker with the ball is found!
         {
             SetTarget(other.gameObject);
         }
@@ -31,6 +31,9 @@ public class AggroRange : MonoBehaviour
 
     private void SetTarget(GameObject target)
     {
-        soldier.SetTarget(target);
+        if (target != null)
+        {
+            soldier.SetTarget(target);
+        }
     }
 }

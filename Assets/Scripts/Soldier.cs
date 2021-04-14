@@ -32,7 +32,8 @@ public class Soldier : MonoBehaviour
     public bool isHoldingBall;
 
     Vector3 gateDestination;
-    Transform opponentToChase;
+    GameObject opponentToChase;
+    Transform opponentToChaseLocation;
 
     enum DeactivateReason
     {
@@ -178,7 +179,11 @@ public class Soldier : MonoBehaviour
                     if (opponentToChase != null)
                     {
                         aggroCircle.SetActive(false);
-                        Move(defenderNormalSpeed, opponentToChase.position);
+                        Move(defenderNormalSpeed, opponentToChaseLocation.position);
+                    }
+                    else
+                    {
+                        aggroCircle.SetActive(true);
                     }
                 }
             }
@@ -224,7 +229,16 @@ public class Soldier : MonoBehaviour
 
     public void SetTarget(GameObject target)
     {
-        opponentToChase = target.transform;
+        if (target != null)
+        {
+            opponentToChase = target;
+            opponentToChaseLocation = target.transform;
+        }
+        else
+        {
+            opponentToChase = null;
+        }
+        
     }
 
     void DeactivateSoldier(DeactivateReason reason)
@@ -247,6 +261,7 @@ public class Soldier : MonoBehaviour
             game.ballDropped = true;
         }
         isHoldingBall = false;
+        opponentToChase = null;
 
 
         // Set off the reactivation sequence based on cause of deactivation
@@ -320,6 +335,7 @@ public class Soldier : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject);
         if (other.CompareTag("Ball"))
         {
             game.ballIsPickedUp = true;
@@ -340,19 +356,37 @@ public class Soldier : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (gameObject.CompareTag("Defender") && other.gameObject.GetComponentInParent<Soldier>().isHoldingBall) // Defender catches an attacker holding a ball
+        if (gameObject.CompareTag("Defender") && other.gameObject.layer == 9) // Defender catches an attacker holding a ball
         {
+            Debug.Log("Defender caught an attacker.");
             DeactivateSoldier(DeactivateReason.Caught);
 
             // Only this trigger, where the defender caught the attacker is fired, so we deactivate the other soldier as well.
-            other.gameObject.GetComponentInParent<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
+            if (other.gameObject.GetComponentInParent<Soldier>() != null)
+            {
+                other.gameObject.GetComponentInParent<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
+            }
+            else
+            {
+                if (other.gameObject.GetComponentInChildren<Soldier>() != null)
+                {
+                    other.gameObject.GetComponentInChildren<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
+                }
+                else
+                {
+                    other.gameObject.GetComponent<Soldier>().DeactivateSoldier(DeactivateReason.Caught);
+                }
+            }
         }
     }
 
     private void Game_OnMatchEnd(object sender, EventArgs e)
     {
         game.OnBallPickedUp -= Game_OnBallPickedUp;
+        game.OnBallDropped -= Game_OnBallDropped;
         game.OnMatchEnd -= Game_OnMatchEnd;
+        
         Destroy(gameObject);
+        
     }
 }

@@ -152,6 +152,7 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        transform.parent = null;
         if (other.CompareTag("Attacker")) // Make the ball the parent of the attacker that took the ball
         {
             transform.parent = other.transform;
@@ -159,6 +160,7 @@ public class Ball : MonoBehaviour
 
         if (other.CompareTag("Gate"))
         {
+            transform.parent = null;
             game.ballInGoal = true;
         }
     }
